@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Facebook Clickable Image Link Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; background: #f4f4f4; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>🔗 FB Clickable Image Preview Generator</h2>
+  <input id="img" placeholder="Paste your image URL (e.g. https://...)" />
+  <input id="link" placeholder="Paste your destination link (e.g. https://...)" />
+  <button onclick="generate()">Generate Preview Link</button>
+  <div id="result"></div>
+
+  <script>
+    function generate() {
+      const img = document.getElementById("img").value;
+      const link = document.getElementById("link").value;
+      if (!img || !link) {
+        alert("Please fill both fields.");
+        return;
+      }
+      fetch("/.netlify/functions/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: img, url: link })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("result").innerHTML = `
+          ✅ Preview Link Generated:<br>
+          <a href="${data.preview}" target="_blank">${data.preview}</a>
+        `;
+      })
+      .catch(() => {
+        document.getElementById("result").innerText = "Something went wrong.";
+      });
+    }
+  </script>
+</body>
+</html>
